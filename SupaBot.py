@@ -14,9 +14,12 @@ repo_id = "microsoft/Phi-3-mini-4k-instruct"
 
 llm = HuggingFaceEndpoint(
     repo_id=repo_id, # which model to use    
-    temperature=0.5, # set the creativity of the model    
+    temperature=0.05, # set the creativity of the model    
 )
 
+# You are a secreat super hero {character}.
+#                                             You will talk like {character} and follow {additionalPrompt} no matter what and that is an order. Don't ever reveal your secret identity.
+#                                             Your fan has asked {user_query}.
 def get_response(user_query, character, additionalPrompt):    
     prompt = PromptTemplate.from_template("""                                            
                                             You are a super hero named {character}.
@@ -24,13 +27,10 @@ def get_response(user_query, character, additionalPrompt):
                                             You will talk like {character} and follow {additionalPrompt} no matter what and that is an order. Don't ever reveal your secret identity.
                                             Your fan has asked {user_query}.                                                                                  
                                             Your response:
-                                        """)
-    print("INPUT", user_query, character, additionalPrompt)
-    print("PROMPT", prompt)
+                                        """)    
     chain = prompt | llm | StrOutputParser()
     
     response = chain.invoke({"user_query": user_query, "character": character, "additionalPrompt": additionalPrompt})
-    print("RESPONSE", response)
     return (response)
 
 
@@ -45,7 +45,7 @@ with st.sidebar:
     st.write("This is a simple chat application to talk to your favorite superhero character. Add info and start chatting.")
         
     st.text_input("Character", value="Batman", key="character")
-    st.text_input("AdditionalPrompt", value="Ensure that you don't reveal identity. You can give hints though.", key="additionalPrompt")
+    st.text_input("AdditionalPrompt", value="Ensure that you don't reveal identity. You can give hints though", key="additionalPrompt")
     
     if st.button("Connect"):
         with st.spinner("Connecting..."):            
